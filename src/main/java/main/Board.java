@@ -1,15 +1,22 @@
 package main;
 
-import java.io.IOException;
-
 public class Board {
-    int dimX;
-    int dimY;
-    int start;
-    int goal;
-    int highestNumber;
-    String printBoard;
+    private int dimX;
+    private int dimY;
+    private int start;
+    private int goal;
+    private int highestNumber;
+    private String printBoard;
 
+    /**
+     *
+     * @param dimX
+     * @param dimY
+     * @param start
+     * @param goal
+     *
+     * Will create a new Board
+     */
     public Board(int dimX, int dimY, int start, int goal) {
         this.dimX = dimX;
         this.dimY = dimY;
@@ -31,7 +38,7 @@ public class Board {
         return start;
     }
 
-    public void printBoard(String API) throws IOException {
+    public void printBoard(String API) {
         if (printBoard == "") {
             printBoard += ("-----------------------------------------------------Game Board-----------------------------------------------------\n");
             for (int i = dimY - 1; i >= 0; i--) {

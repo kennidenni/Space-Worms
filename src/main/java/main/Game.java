@@ -1,6 +1,5 @@
 package main;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -9,14 +8,18 @@ public class Game {
     private static Scanner sc = new Scanner(System.in);
     private static Board mainBoard;
 
-    public static void playGame(String boardLink, Board board) throws IOException {
+    /**
+     * This will start the game
+     * @param boardLink The API link
+     * @param board The board used to play on
+     */
+    public static void playGame(String boardLink, Board board) {
         API = boardLink;
         mainBoard = board;
 
         System.out.println("\nInitialize  game...");
-        ArrayList<Player> playerList = new ArrayList<>();
-
-        boolean spaceRules = setupForGame(playerList);
+        ArrayList<Player> playerList = makePlayerList();
+        boolean spaceRules = setupForGame();
 
         System.out.println("\nStarting game...");
         boolean running = true;
@@ -41,7 +44,10 @@ public class Game {
         System.out.println(lastPlayer.getName() + " won the game after " + round + " rounds!");
     }
 
-
+    /**
+     * Will print the current player positions
+     * @param playerList a list with all the players
+     */
     private static void printPlayerPosition(ArrayList<Player> playerList) {
         String output = "";
         for (Player p : playerList) {
@@ -50,8 +56,11 @@ public class Game {
         System.out.println(output);
     }
 
-    private static boolean setupForGame(ArrayList<Player> playerList) {
-        addPlayerToList(playerList);
+    /**
+     * Will set up the game before start
+     * @return boolean that tells if it should be normal or weird rules
+     */
+    private static boolean setupForGame() {
 
         System.out.println("Do you want normal snakes-and-latter rules or space rules? (Space=1 / Normal=any number");
         String input = sc.nextLine();
@@ -67,20 +76,20 @@ public class Game {
 
     }
 
-    private static void addPlayerToList(ArrayList<Player> list) {
+    /**
+     * Will add players with name to the list
+     * @return
+     */
+    private static ArrayList makePlayerList() {
+        ArrayList<Player> playerList = new ArrayList<>();
         int addMorePlayers = 1;
         while (addMorePlayers == 1) {
             sc = new Scanner(System.in);
+
             System.out.println("Enter your name: ");
+            playerList.add(new Player(sc.nextLine()));
 
-            String s = sc.nextLine();
-            System.out.println(s);
-
-            Player p = new Player(s);
-            System.out.println(p);
-
-            list.add(p);
-            for (Player i : list) {
+            for (Player i : playerList) {
                 System.out.println(i.getName());
             }
 
@@ -92,10 +101,9 @@ public class Game {
             }
             addMorePlayers =  Integer.parseInt(input);
         }
+        return playerList;
     }
 
 
-    public static int rollDie() {
-        return (int) (Math.random() * 6) + 1;
-    }
+
 }

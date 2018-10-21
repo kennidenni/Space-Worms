@@ -1,6 +1,5 @@
 package main;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Rules {
@@ -10,7 +9,7 @@ public class Rules {
         return false;
     }
 
-    public static boolean canWalkThisWay(String dir, int square, int die, String API, int maxSquare) throws IOException {
+    public static boolean canWalkThisWay(String dir, int square, int die, String API, int maxSquare) {
         int currPos = square;
         for (int i = 0; i < die; i++) {
             if (outOfBoardTest(maxSquare, currPos + i)) {
@@ -24,7 +23,7 @@ public class Rules {
         return true;
     }
 
-    public static ArrayList<String> findPossiblePaths(int square, int die, String API, int maxSquare) throws IOException {
+    public static ArrayList<String> findPossiblePaths(int square, int die, String API, int maxSquare) {
         ArrayList<String> possibilities = GetFromApi.getDirectionPossibilities(square, API);
         ArrayList<String> possible = new ArrayList<>();
 

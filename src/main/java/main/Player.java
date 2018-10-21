@@ -1,12 +1,11 @@
 package main;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Player {
-    private static String name;
-    private static int position;
+    private String name;
+    private int position;
 
     public Player(String name) {
         this.name = name;
@@ -21,8 +20,8 @@ public class Player {
         return name;
     }
 
-    public static boolean doNormalPlayerTurn(Board board, String API) throws IOException {
-        int dieRoll = Game.rollDie();
+    public boolean doNormalPlayerTurn(Board board, String API) {
+        int dieRoll = rollDie();
         int nextPos = position + dieRoll;
 
         if (Rules.outOfBoardTest(board.getHighestNumber(), nextPos)) {
@@ -43,9 +42,9 @@ public class Player {
         return true;
     }
 
-    public static boolean doSpacePlayerTurn(Board board, String API) throws IOException {
+    public boolean doSpacePlayerTurn(Board board, String API) {
         Scanner sc = new Scanner(System.in);
-        int dieRoll = Game.rollDie();
+        int dieRoll = rollDie();
 
         ArrayList possibilities = Rules.findPossiblePaths(position + 1, dieRoll, API, board.getHighestNumber());
         System.out.println(name + " rolled a " + dieRoll + ". What direction do you want to walk? Type one of the directions: " + possibilities);
@@ -70,12 +69,15 @@ public class Player {
         return true;
     }
 
-    private static void walkXTimesInDir(int dieRoll, String dir, String API) throws IOException {
+    private void walkXTimesInDir(int dieRoll, String dir, String API) {
         while (dieRoll > 0) {
             System.out.println(dieRoll);
             position = GetFromApi.getFromDirection(position + 1, dir, API) - 1;
             dieRoll--;
         }
+    }
 
+    public int rollDie() {
+        return (int) (Math.random() * 6) + 1;
     }
 }

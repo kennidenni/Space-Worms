@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class GetFromApi {
 
-    public static int getFromDirection(int squareNumber, String dir, String link) throws IOException {
+    public static int getFromDirection(int squareNumber, String dir, String link) {
         String sURL = link + "/" + squareNumber; //just a string
         JsonObject rootobj = getRootObject(sURL);
         JsonArray jArr = rootobj.get("links").getAsJsonArray();
@@ -27,7 +27,7 @@ public class GetFromApi {
         return -1;
     }
 
-    public static ArrayList getDirectionPossibilities(int squareNumber, String link) throws IOException {
+    public static ArrayList getDirectionPossibilities(int squareNumber, String link) {
         String sURL = link + "/" + squareNumber; //just a string
         JsonObject rootobj = getRootObject(sURL);
         JsonArray jArr = rootobj.get("links").getAsJsonArray();
@@ -40,7 +40,7 @@ public class GetFromApi {
         return possibilities;
     }
 
-    public static int getNextOnBoard(int squareNumber, String link) throws IOException {
+    public static int getNextOnBoard(int squareNumber, String link) {
         String sURL = link + "/" + squareNumber; //just a string
         JsonObject rootobj = getRootObject(sURL);
         JsonArray jArr = rootobj.get("links").getAsJsonArray();
@@ -55,7 +55,7 @@ public class GetFromApi {
         return returnNumber;
     }
 
-    public static int getWormHole(int squareNumber, String link) throws IOException {
+    public static int getWormHole(int squareNumber, String link) {
         String sURL = link + "/" + squareNumber; //just a string
         JsonObject rootobj = getRootObject(sURL);
 
@@ -65,7 +65,7 @@ public class GetFromApi {
         return -1;
     }
 
-    public static Board getBoard(String link) throws IOException {
+    public static Board getBoard(String link) {
         JsonObject rootobj = getRootObject(link);
 
         //String zipcode = rootobj.get("id").getAsString(); //just grab the zipcode
@@ -77,16 +77,20 @@ public class GetFromApi {
         return new Board(dimX, dimY, start, goal);
     }
 
-    private static JsonObject getRootObject(String URL) throws IOException {
+    private static JsonObject getRootObject(String URL) {
+        try {
+            URL url = new URL(URL);
+            URLConnection request = url.openConnection();
+            request.connect();
 
+            // Convert to a JSON object to print data
+            JsonParser jp = new JsonParser(); //from gson
+            JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent())); //Convert the input stream to a json element
+            return root.getAsJsonObject(); //May be an array, may be an object.
+        } catch (IOException e) {
+
+        }
         // Connect to the URL using java's native library
-        URL url = new URL(URL);
-        URLConnection request = url.openConnection();
-        request.connect();
-
-        // Convert to a JSON object to print data
-        JsonParser jp = new JsonParser(); //from gson
-        JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent())); //Convert the input stream to a json element
-        return root.getAsJsonObject(); //May be an array, may be an object.
+        return null;
     }
 }
