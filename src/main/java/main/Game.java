@@ -21,23 +21,27 @@ public class Game {
         System.out.println("\nStarting game...");
         boolean running = true;
         int round = 0;
+        Player lastPlayer;
         while (running) {
             round++;
             mainBoard.printBoard(API);
             System.out.println("Round: " + round + "\n");
             printPlayerPosition(playerList);
             for (Player p : playerList) {
+                lastPlayer = p;
+                System.out.println(p.getName() + "'s turn. Press Enter to roll a die");
+                sc.nextLine();
                 if (!spaceRules)
                     running = doNormalPlayerTurn(p, board);
                 else
                     running = doSpacePlayerTurn(p, board);
             }
         }
+
+        System.out.println(lastPlayer.getName() + " won the game after " + round + " rounds!");
     }
 
     private static boolean doSpacePlayerTurn(Player p, Board board) {
-        System.out.println(p.getName() + "'s turn. Press Enter to roll a die");
-        sc.nextLine();
         int dieRoll = rollDie();
 
 
@@ -45,20 +49,22 @@ public class Game {
     }
 
     private static boolean doNormalPlayerTurn(Player p, Board board) throws IOException {
-        System.out.println(p.getName() + "'s turn. Press Enter to roll a die");
-        sc.nextLine();
         int dieRoll = rollDie();
+        int nextPos = p.getPosition()+ dieRoll;
 
-        if (GetFromApi.getWormHole((p.getPosition() +1) + dieRoll, API) - 1 >= 0) {
-            p.setPosition(GetFromApi.getWormHole((p.getPosition() + 1) + dieRoll, API) - 1);
+        if (Rules.outOfBoardTest(board.getHighestNumber(), nextPos)) {
+            nextPos = board.getHighestNumber()-1;
+        }
+
+        if (GetFromApi.getWormHole((nextPos +1), API) - 1 >= 0) {
+            p.setPosition(GetFromApi.getWormHole((nextPos+ 1), API) - 1);
             System.out.println(p.getName() + " rolled a " + dieRoll + " and is now on Square " + (p.getPosition() + 1) + " because of a wormhole");
         } else {
-            p.setPosition(p.getPosition() + dieRoll);
+            p.setPosition(nextPos);
             System.out.println(p.getName() + " rolled a " + dieRoll + " and is now on Square " + (p.getPosition() + 1));
         }
 
         if (p.getPosition() == board.getGoal() - 1) {
-            System.out.println(p.getName() + " won the game!");
             return false;
         }
         return true;
