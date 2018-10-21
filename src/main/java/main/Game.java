@@ -21,7 +21,7 @@ public class Game {
         System.out.println("\nStarting game...");
         boolean running = true;
         int round = 0;
-        Player lastPlayer;
+        Player lastPlayer = null;
         while (running) {
             round++;
             mainBoard.printBoard(API);
@@ -32,42 +32,13 @@ public class Game {
                 System.out.println(p.getName() + "'s turn. Press Enter to roll a die");
                 sc.nextLine();
                 if (!spaceRules)
-                    running = doNormalPlayerTurn(p, board);
+                    running = p.doNormalPlayerTurn(board, API);
                 else
-                    running = doSpacePlayerTurn(p, board);
+                    running = p.doSpacePlayerTurn(board, API);
             }
         }
 
         System.out.println(lastPlayer.getName() + " won the game after " + round + " rounds!");
-    }
-
-    private static boolean doSpacePlayerTurn(Player p, Board board) {
-        int dieRoll = rollDie();
-
-
-        return true;
-    }
-
-    private static boolean doNormalPlayerTurn(Player p, Board board) throws IOException {
-        int dieRoll = rollDie();
-        int nextPos = p.getPosition()+ dieRoll;
-
-        if (Rules.outOfBoardTest(board.getHighestNumber(), nextPos)) {
-            nextPos = board.getHighestNumber()-1;
-        }
-
-        if (GetFromApi.getWormHole((nextPos +1), API) - 1 >= 0) {
-            p.setPosition(GetFromApi.getWormHole((nextPos+ 1), API) - 1);
-            System.out.println(p.getName() + " rolled a " + dieRoll + " and is now on Square " + (p.getPosition() + 1) + " because of a wormhole");
-        } else {
-            p.setPosition(nextPos);
-            System.out.println(p.getName() + " rolled a " + dieRoll + " and is now on Square " + (p.getPosition() + 1));
-        }
-
-        if (p.getPosition() == board.getGoal() - 1) {
-            return false;
-        }
-        return true;
     }
 
 
@@ -79,39 +50,52 @@ public class Game {
         System.out.println(output);
     }
 
-    private static boolean setupForGame(ArrayList playerList) {
+    private static boolean setupForGame(ArrayList<Player> playerList) {
         addPlayerToList(playerList);
+
         System.out.println("Do you want normal snakes-and-latter rules or space rules? (Space=1 / Normal=any number");
         String input = sc.nextLine();
+
         while (!input.matches("\\d+")) {
             System.out.println("Input should be int, please type 1 or 0");
             input = sc.nextLine();
         }
-        if (Integer.valueOf(input) == 1){
+        if (Integer.valueOf(input) == 1) {
             return true;
-        } else {
-            return false;
         }
+        return false;
+
     }
 
     private static void addPlayerToList(ArrayList<Player> list) {
-        sc = new Scanner(System.in);
-        System.out.println("Enter your name: ");
-        list.add(new Player(sc.nextLine()));
+        int addMorePlayers = 1;
+        while (addMorePlayers == 1) {
+            sc = new Scanner(System.in);
+            System.out.println("Enter your name: ");
 
-        System.out.println("Do you want to add more players? (Y=1 / N=any number)");
-        String input = sc.nextLine();
-        while (!input.matches("\\d+")) {
-            System.out.println("Input should be int, please type 1 or 0");
-            input = sc.nextLine();
-        }
+            String s = sc.nextLine();
+            System.out.println(s);
 
-        if (Integer.valueOf(input) == 1) {
-            addPlayerToList(list);
+            Player p = new Player(s);
+            System.out.println(p);
+
+            list.add(p);
+            for (Player i : list) {
+                System.out.println(i.getName());
+            }
+
+            System.out.println("Do you want to add more players? (Y=1 / N=any number)");
+            String input = sc.nextLine();
+            while (!input.matches("\\d+")) {
+                System.out.println("Input should be int, please type 1 or 0");
+                input = sc.nextLine();
+            }
+            addMorePlayers =  Integer.parseInt(input);
         }
     }
 
-    private static int rollDie() {
+
+    public static int rollDie() {
         return (int) (Math.random() * 6) + 1;
     }
 }

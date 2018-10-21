@@ -8,25 +8,37 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 public class GetFromApi {
 
-    public static int getFromDirection(int squareNumber, Main.Dir d, String link) throws IOException {
+    public static int getFromDirection(int squareNumber, String dir, String link) throws IOException {
         String sURL = link + "/" + squareNumber; //just a string
         JsonObject rootobj = getRootObject(sURL);
         JsonArray jArr = rootobj.get("links").getAsJsonArray();
         for (int i = 0; i < jArr.size(); i++) {
             JsonObject jObj = jArr.get(i).getAsJsonObject();
-            if (jObj.get("direction").getAsString().equals(d.toString())) {
+            if (jObj.get("direction").getAsString().equals(dir)) {
                 return jObj.get("square").getAsInt();
             }
         }
         return -1;
     }
 
+    public static ArrayList getDirectionPossibilities(int squareNumber, String link) throws IOException {
+        String sURL = link + "/" + squareNumber; //just a string
+        JsonObject rootobj = getRootObject(sURL);
+        JsonArray jArr = rootobj.get("links").getAsJsonArray();
+        ArrayList possibilities = new ArrayList();
+
+        for (int i = 0; i < jArr.size(); i++) {
+            JsonObject jObj = jArr.get(i).getAsJsonObject();
+            possibilities.add(jObj.get("direction").getAsString());
+        }
+        return possibilities;
+    }
 
     public static int getNextOnBoard(int squareNumber, String link) throws IOException {
         String sURL = link + "/" + squareNumber; //just a string

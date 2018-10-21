@@ -28,14 +28,15 @@ public class Main {
 
         for (int i = 0; i < highestNumber; i++) {
             for (Dir d : Dir.values()) {
-                if (GetFromApi.getFromDirection(i + 1, d, BOARDLINK) - 1 >= 0) {
-                    edges.add(new Edge(i, (GetFromApi.getFromDirection(i + 1, d, BOARDLINK) - 1), 1));
+                if (GetFromApi.getFromDirection(i + 1, d.toString(), BOARDLINK) - 1 >= 0) {
+                    edges.add(new Edge(i, (GetFromApi.getFromDirection(i + 1, d.toString(), BOARDLINK) - 1), 1));
                 }
             }
             if (GetFromApi.getWormHole(i + 1, BOARDLINK) - 1 >= 0) {
                 edges.add(new Edge(i, (GetFromApi.getWormHole(i + 1, BOARDLINK) - 1), 0));
             }
         }
+
         Edge[] edgeArray = (Edge[]) edges.toArray(new Edge[edges.size()]);
         Graph g = new Graph(edgeArray);
         return g;
