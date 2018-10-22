@@ -10,12 +10,13 @@ public class Board {
 
     /**
      * Will create a new Board
+     *
      * @param dimX
      * @param dimY
      * @param start
      * @param goal
      */
-    public Board(int dimX, int dimY, int start, int goal) {
+    Board(int dimX, int dimY, int start, int goal) {
         this.dimX = dimX;
         this.dimY = dimY;
         this.start = start;
@@ -26,6 +27,7 @@ public class Board {
 
     /**
      * Returns the goal on the map
+     *
      * @return goal
      */
     public int getGoal() {
@@ -34,6 +36,7 @@ public class Board {
 
     /**
      * Returns the highest square number
+     *
      * @return highest number
      */
     public int getHighestNumber() {
@@ -42,6 +45,7 @@ public class Board {
 
     /**
      * Returns the start on the map
+     *
      * @return start
      */
     public int getStart() {
@@ -50,10 +54,11 @@ public class Board {
 
     /**
      * Prints the board in the terminal
+     *
      * @param API string to the API
      */
     public void printBoard(String API) {
-        if (printBoard == "") {
+        if (printBoard.equals("")) {
             printBoard += ("-----------------------------------------------------Game Board-----------------------------------------------------\n");
             for (int i = dimY - 1; i >= 0; i--) {
                 boolean reverse = false;
@@ -86,8 +91,8 @@ public class Board {
                 }
                 printBoard += "\n";
             }
-
             System.out.println(printBoard);
+
         } else {
             System.out.println(printBoard);
         }

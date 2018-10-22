@@ -9,19 +9,21 @@ import java.util.Scanner;
 public class Player {
     private String name;
     private int position;
-    private int DICE = 6;
 
     /**
-     * Creates a new player with a name
-     * @param name
+     * Creates a new player with a name and starting position
+     *
+     * @param name        player name
+     * @param startingPos starting position on the board
      */
-    public Player(String name, int startingPos) {
+    Player(String name, int startingPos) {
         this.name = name;
         position = startingPos;
     }
 
     /**
      * Get the current position
+     *
      * @return position
      */
     public int getPosition() {
@@ -30,6 +32,7 @@ public class Player {
 
     /**
      * Get the name of the player
+     *
      * @return name
      */
     public String getName() {
@@ -38,15 +41,16 @@ public class Player {
 
     /**
      * Do a turn with rolling a die and moving with normal rules
+     *
      * @param board playingBoard
-     * @param API String with link to api
+     * @param API   String with link to api
      * @return if player won return false, else return true
      */
     public boolean doNormalPlayerTurn(Board board, String API) {
         int dieRoll = rollDie();
         int nextPos = position + dieRoll;
 
-        if (Rules.outOfBoardTest(board.getHighestNumber(), nextPos)) {
+        if (Rules.outOfBoard(board.getHighestNumber(), nextPos)) {
             nextPos = board.getHighestNumber();
         }
 
@@ -58,23 +62,21 @@ public class Player {
             System.out.println(name + " rolled a " + dieRoll + " and is now on Square " + position);
         }
 
-        if (position == board.getGoal()) {
-            return false;
-        }
-        return true;
+        return position != board.getGoal();
     }
 
     /**
      * Do a turn with rolling a die and moving with space rules
+     *
      * @param board playingBoard
-     * @param API String with link to api
+     * @param API   String with link to api
      * @return if player won return false, else return true
      */
     public boolean doSpacePlayerTurn(Board board, String API) {
         Scanner sc = new Scanner(System.in);
         int dieRoll = rollDie();
 
-        ArrayList possibilities = Rules.findPossiblePaths(position, dieRoll, API, board.getHighestNumber());
+        ArrayList<String> possibilities = Rules.findPossiblePaths(position, dieRoll, API, board.getHighestNumber());
         System.out.println(name + " rolled a " + dieRoll + ". What direction do you want to walk? Type one of the directions: " + possibilities);
         String input = sc.nextLine();
         while (!possibilities.contains(input)) {
@@ -90,22 +92,18 @@ public class Player {
             System.out.println(name + " walked " + input + " " + dieRoll + " times and is now standing on Square " + position);
         }
 
-
-        if (position == board.getGoal()) {
-            return false;
-        }
-        return true;
+        return position != board.getGoal();
     }
 
     /**
      * Walk n-times in a specific direction
+     *
      * @param times times walking
-     * @param dir direction
-     * @param API String URL link
+     * @param dir   direction
+     * @param API   String URL link
      */
     private void walkXTimesInDir(int times, String dir, String API) {
         while (times > 0) {
-            System.out.println(times);
             position = GetFromApi.getFromDirection(position, dir, API);
             times--;
         }
@@ -113,9 +111,11 @@ public class Player {
 
     /**
      * Roll a die
+     *
      * @return die roll
      */
-    public int rollDie() {
+    private int rollDie() {
+        int DICE = 6;
         return (int) (Math.random() * DICE) + 1;
     }
 }

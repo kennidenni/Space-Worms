@@ -1,19 +1,13 @@
 package main;
 
 import Game.Game;
-import Game.Rules;
-import ShortestPath.Edge;
-import ShortestPath.Graph;
+import ShortestPath.Dijkstra;
+import ShortestPath.WeightedGraph;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
     private static final String BOARDLINK = "https://visningsrom.stacc.com/dd_server_worms/rest/boards/2";
-
-    public enum Dir {NW, N, NE, E, SE, S, SW, W}
-
-    private static Scanner sc;
 
     public static void main(String[] args) {
         System.out.println("Collecting board from API...");
@@ -21,11 +15,12 @@ public class Main {
 
         boolean running = true;
         while (running) {
-            sc = new Scanner(System.in);
+            Scanner sc = new Scanner(System.in);
             System.out.println("\nType with number what action you want to do");
             System.out.println("1: Find shortest path from start to goal with space rules");
             System.out.println("2: Find shortest path from start to goal with normal rules");
-            System.out.println("3: Play the game");
+            System.out.println("3: Play the game with space rules");
+            System.out.println("4: Play the game with normal rules");
             System.out.println("All other numbers: Exit");
 
             String input = sc.nextLine();
@@ -35,24 +30,29 @@ public class Main {
                 input = sc.nextLine();
             }
             int number = Integer.valueOf(input);
-            Graph graph = null;
+
             switch (number) {
                 case 1:
                     System.out.println("Creating graph to compute shortest path with Dijkstra...");
-                    graph = getDijkstraSpaceRulesGraph(board.getHighestNumber());
+                    WeightedGraph spaceGraph = getDijkstraSpaceRulesWGraph(board.getHighestNumber());
                     System.out.println("Calculating shortest path from start to goal with Dijkstra...");
-                    graph.calculateShortestDistances();
-                    graph.printGoalResult(board.getStart(), board.getGoal());
+                    int[] pred1 = Dijkstra.runDijkstra(spaceGraph, 0);
+                    System.out.println("Printing path...");
+                    Dijkstra.printPath(spaceGraph, pred1, 0, board.getGoal() - 1);
                     break;
                 case 2:
                     System.out.println("Creating graph to compute shortest path with Dijkstra...");
-                    graph = getDijkstraNormalGraph(board.getHighestNumber());
+                    WeightedGraph normalGraph = getDijkstraNormalWGraph(board.getHighestNumber());
                     System.out.println("Calculating shortest path from start to goal with Dijkstra...");
-                    graph.calculateShortestDistances();
-                    graph.printGoalResult(board.getStart(), board.getGoal());
+                    int[] pred2 = Dijkstra.runDijkstra(normalGraph, 0);
+                    System.out.println("Printing path...");
+                    Dijkstra.printPath(normalGraph, pred2, 0, board.getGoal() - 1);
                     break;
                 case 3:
-                    Game.playGame(BOARDLINK, board);
+                    Game.playGame(BOARDLINK, board, true);
+                    break;
+                case 4:
+                    Game.playGame(BOARDLINK, board, false);
                     break;
                 default:
                     running = false;
@@ -61,54 +61,57 @@ public class Main {
     }
 
     /**
-     * Will make a graph from all the squares on the board
+     * Will make a graph from all the squares on the board with normal rules
      *
-     * @param highestNumber the highest number in the graph
-     * @return a new graph
+     * @param highestNumber the highest number on the board
+     * @return a new weighted graph
      */
-    private static Graph getDijkstraSpaceRulesGraph(int highestNumber) {
-        ArrayList<Edge> edges = new ArrayList<>();
+    private static WeightedGraph getDijkstraNormalWGraph(int highestNumber) {
+        WeightedGraph WG = new WeightedGraph(highestNumber);
 
-        for (int i = 0; i < highestNumber; i++) {
-            for (String d : (ArrayList<String>) GetFromApi.getDirectionPossibilities(i + 1, BOARDLINK)) {
-                if (!d.equals("next"))
-                    edges.add(new Edge(i, GetFromApi.getFromDirection(i + 1, d, BOARDLINK) - 1, 1));
-            }
-            if (GetFromApi.getWormHole(i + 1, BOARDLINK) >= 0) {
-                edges.add(new Edge(i, GetFromApi.getWormHole(i + 1, BOARDLINK) - 1, 0));
-            }
-        }
-
-        Edge[] edgeArray = edges.toArray(new Edge[edges.size()]);
-        Graph g = new Graph(edgeArray);
-        return g;
-    }
-
-
-    private static Graph getDijkstraNormalGraph(int highestNumber) {
-        ArrayList<Edge> edges = new ArrayList<>();
         for (int i = 0; i < highestNumber; i++) {
             for (int j = 1; j <= 6 && i + j < highestNumber; j++) {
                 int nextPos = i + j;
-                if (GetFromApi.getWormHole(nextPos + 1, BOARDLINK) != -1) {
-                    nextPos = GetFromApi.getWormHole(nextPos + 1, BOARDLINK) - 1;
-                    System.out.println("i " + i + " nextpos " + nextPos);
-                    if (i > nextPos) {
-                        edges.add(new Edge(i, nextPos, 2));
-                    } else {
-                        edges.add(new Edge(i, nextPos, 0));
-                    }
-
+                if (GetFromApi.getWormHole(i + 1, BOARDLINK) != -1) {
+                    int next = GetFromApi.getWormHole(i + 1, BOARDLINK);
+                    WG.setLabel(i, "w" + (i + 1));
+                    WG.addEdge(i, next - 1, 1);
                 } else {
-                    System.out.println("fuck me i " + i + " nextpos " + nextPos);
-                    edges.add(new Edge(i, nextPos, 1));
+                    WG.setLabel(i, String.valueOf(i + 1));
+                    WG.addEdge(i, nextPos, 2);
+                }
+
+            }
+        }
+        return WG;
+    }
+
+
+    /**
+     * Will make a graph from all the squares on the board with space rules
+     *
+     * @param highestNumber the highest number on the board
+     * @return a new weighted graph
+     */
+    private static WeightedGraph getDijkstraSpaceRulesWGraph(int highestNumber) {
+        WeightedGraph WG = new WeightedGraph(highestNumber);
+
+        for (int i = 0; i < highestNumber; i++) {
+            if (GetFromApi.getWormHole(i + 1, BOARDLINK) != -1) {
+                int next = GetFromApi.getWormHole(i + 1, BOARDLINK);
+                WG.setLabel(i, "w" + (i + 1));
+                WG.addEdge(i, next - 1, 1);
+            } else {
+                for (String d : GetFromApi.getDirectionPossibilities(i + 1, BOARDLINK)) {
+                    if (!d.equals("next")) {
+                        int next = GetFromApi.getFromDirection(i + 1, d, BOARDLINK) - 1;
+                        WG.setLabel(i, String.valueOf(i + 1));
+                        WG.addEdge(i, next, 2);
+                    }
                 }
             }
         }
-
-        Edge[] edgeArray = edges.toArray(new Edge[edges.size()]);
-        Graph g = new Graph(edgeArray);
-        return g;
+        return WG;
     }
 }
 
