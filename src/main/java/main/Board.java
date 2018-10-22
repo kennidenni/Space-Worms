@@ -9,13 +9,11 @@ public class Board {
     private String printBoard;
 
     /**
-     *
+     * Will create a new Board
      * @param dimX
      * @param dimY
      * @param start
      * @param goal
-     *
-     * Will create a new Board
      */
     public Board(int dimX, int dimY, int start, int goal) {
         this.dimX = dimX;
@@ -26,18 +24,34 @@ public class Board {
         this.printBoard = "";
     }
 
+    /**
+     * Returns the goal on the map
+     * @return goal
+     */
     public int getGoal() {
         return goal;
     }
 
+    /**
+     * Returns the highest square number
+     * @return highest number
+     */
     public int getHighestNumber() {
         return highestNumber;
     }
 
+    /**
+     * Returns the start on the map
+     * @return start
+     */
     public int getStart() {
         return start;
     }
 
+    /**
+     * Prints the board in the terminal
+     * @param API string to the API
+     */
     public void printBoard(String API) {
         if (printBoard == "") {
             printBoard += ("-----------------------------------------------------Game Board-----------------------------------------------------\n");

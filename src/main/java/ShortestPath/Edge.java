@@ -1,4 +1,4 @@
-package main;
+package ShortestPath;
 
 public class Edge {
     private int fromNodeIndex;

@@ -1,4 +1,4 @@
-package main;
+package ShortestPath;
 
 import java.util.ArrayList;
 
@@ -55,6 +55,7 @@ public class Graph {
                         nodes[neighbourIndex].setDistanceFromSource(tentative);
 
                         //Sets the parent so that we can show the path after
+                        System.out.println(neighbourIndex + " next " + nextNode);
                         nodes[neighbourIndex].setParent(nextNode);
                     }
                 }
@@ -108,5 +109,6 @@ public class Graph {
                 printPath(nodes[start].getParent(), goal);
             }
         }
+        System.out.println();
     }
 }

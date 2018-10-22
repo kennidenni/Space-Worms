@@ -1,4 +1,6 @@
-package main;
+package Game;
+
+import main.Board;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -51,7 +53,7 @@ public class Game {
     private static void printPlayerPosition(ArrayList<Player> playerList) {
         String output = "";
         for (Player p : playerList) {
-            output += (p.getName() + " is on Square: " + (p.getPosition() + 1) + ", ");
+            output += (p.getName() + " is on Square: " + p.getPosition() + ", ");
         }
         System.out.println(output);
     }
@@ -77,8 +79,8 @@ public class Game {
     }
 
     /**
-     * Will add players with name to the list
-     * @return
+     * Will add players with name a the list and return it
+     * @return list containing players
      */
     private static ArrayList makePlayerList() {
         ArrayList<Player> playerList = new ArrayList<>();
@@ -87,7 +89,7 @@ public class Game {
             sc = new Scanner(System.in);
 
             System.out.println("Enter your name: ");
-            playerList.add(new Player(sc.nextLine()));
+            playerList.add(new Player(sc.nextLine(), mainBoard.getStart()));
 
             for (Player i : playerList) {
                 System.out.println(i.getName());

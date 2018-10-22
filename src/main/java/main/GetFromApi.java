@@ -14,8 +14,15 @@ import java.util.ArrayList;
 
 public class GetFromApi {
 
-    public static int getFromDirection(int squareNumber, String dir, String link) {
-        String sURL = link + "/" + squareNumber; //just a string
+    /**
+     * Method to get the next square in a specific direction
+     * @param squareNumber current square
+     * @param dir direction you want to go
+     * @param URL String API link
+     * @return next square in dir direction from squareNumber
+     */
+    public static int getFromDirection(int squareNumber, String dir, String URL) {
+        String sURL = URL + "/" + squareNumber; //just a string
         JsonObject rootobj = getRootObject(sURL);
         JsonArray jArr = rootobj.get("links").getAsJsonArray();
         for (int i = 0; i < jArr.size(); i++) {
@@ -27,8 +34,14 @@ public class GetFromApi {
         return -1;
     }
 
-    public static ArrayList getDirectionPossibilities(int squareNumber, String link) {
-        String sURL = link + "/" + squareNumber; //just a string
+    /**
+     * Method to get the possible directions from current square
+     * @param squareNumber current square
+     * @param URL String API URL
+     * @return List containing all possible directions
+     */
+    public static ArrayList getDirectionPossibilities(int squareNumber, String URL) {
+        String sURL = URL + "/" + squareNumber; //just a string
         JsonObject rootobj = getRootObject(sURL);
         JsonArray jArr = rootobj.get("links").getAsJsonArray();
         ArrayList possibilities = new ArrayList();
@@ -40,8 +53,14 @@ public class GetFromApi {
         return possibilities;
     }
 
-    public static int getNextOnBoard(int squareNumber, String link) {
-        String sURL = link + "/" + squareNumber; //just a string
+    /**
+     * Method to get the next square from current square
+     * @param squareNumber current square
+     * @param URL String API URL
+     * @return next square from squareNumber
+     */
+    public static int getNextOnBoard(int squareNumber, String URL) {
+        String sURL = URL + "/" + squareNumber; //just a string
         JsonObject rootobj = getRootObject(sURL);
         JsonArray jArr = rootobj.get("links").getAsJsonArray();
 
@@ -55,8 +74,14 @@ public class GetFromApi {
         return returnNumber;
     }
 
-    public static int getWormHole(int squareNumber, String link) {
-        String sURL = link + "/" + squareNumber; //just a string
+    /**
+     * Method to get the wormhole if it exist
+     * @param squareNumber current square
+     * @param URL String API URL
+     * @return returns -1 if no wormhole, else wormhole square
+     */
+    public static int getWormHole(int squareNumber, String URL) {
+        String sURL = URL + "/" + squareNumber; //just a string
         JsonObject rootobj = getRootObject(sURL);
 
         if (rootobj.has("wormhole")) {
@@ -65,8 +90,13 @@ public class GetFromApi {
         return -1;
     }
 
-    public static Board getBoard(String link) {
-        JsonObject rootobj = getRootObject(link);
+    /**
+     * Get the board from API
+     * @param URL String API URL
+     * @return a new Board with info from API
+     */
+    public static Board getBoard(String URL) {
+        JsonObject rootobj = getRootObject(URL);
 
         //String zipcode = rootobj.get("id").getAsString(); //just grab the zipcode
         int dimX = rootobj.get("dimX").getAsInt(); //just grab the zipcode
@@ -77,6 +107,11 @@ public class GetFromApi {
         return new Board(dimX, dimY, start, goal);
     }
 
+    /**
+     * Helper method to get the first JSON object from API URL
+     * @param URL String API URL
+     * @return JSON object
+     */
     private static JsonObject getRootObject(String URL) {
         try {
             URL url = new URL(URL);
